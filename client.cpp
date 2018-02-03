@@ -1,4 +1,21 @@
 #include "client.h"
+
+void EndTheMessage(char * message)
+{
+    for(int i=0;;i++)
+    {
+        if (message[i]=='\0')
+        {
+            message[i]='\r';
+            message[i+1]='\n';
+            message[i+2]='\0';
+            break;
+        }
+
+    }
+}
+
+
 Client::Client(QObject *parent) : QObject(parent)
 {
 
@@ -16,11 +33,14 @@ bool Client::ConnectToServer(QString host, int port)
 
 void Client::SendData()                              //send data on server
 {
-    char data[1024];                                 //buff for send data
+    char data[1024]="wefwefwe";                                 //buff for send data
 
        while(IfConnectedToServ())                   //till connection establish, send data from istream
        {
-        std::cin>>data;                             //input data for send on socket
+      std::cin.getline (data,1024);                  //input data for send on socket
+        EndTheMessage(data);                        //add \r \n \0 in the and of message, that mean message end and server don't will wait for new data
+
+
         socket->write(data);                        //write data to socket
         socket->flush();                            //write all data from buffer
         socket->waitForBytesWritten(30000);          //wait till at least one byte has been written on the socket
